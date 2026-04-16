@@ -2,7 +2,6 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import Home from './Home'
-import Edit from './Edit'
 import {
   createBrowserRouter,
   RouterProvider,
@@ -12,10 +11,6 @@ const routes = createBrowserRouter([
   {
     path: "/",
     element: <Home />
-  },
-  {
-    path: "/edit/:id",
-    element: <Edit />
   }
 ]);
 
