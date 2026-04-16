@@ -32,6 +32,18 @@ function Home() {
     }
   };
 
+  const editUser = async (id) => {
+    try {
+      setLoading(true);
+      await axios.put(`${BACKEND_URL}/api/v1/todo/users/${id}`);
+      setLoading(false);
+      fetchUsers(); 
+    }catch (error) {
+      setLoading(false);
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -76,18 +88,17 @@ function Home() {
 
                 {/* บรรทัด 3: ปุ่ม Edit + Delete */}
                 <div className="mt-4 flex gap-2">
-                    <Link 
-                    to={`/edit/${user.id}`} 
+                    <button 
                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 rounded-lg text-sm font-medium transition-colors"
+                    onClick={() => editUser(user.id)}
                     >
-                    Edit
-                    </Link>
+                    Edit</button>
+
                     <button 
                     className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors"
                     onClick={() => deleteUser(user.id)}
                     >
-                    Delete
-                    </button>
+                    Delete</button>
                 </div>
 
                 </div>
