@@ -7,26 +7,25 @@ const BACKEND_URL = 'https://69df62c9d6de26e119294a16.mockapi.io';
 const USER_URL = `${BACKEND_URL}/api/v1/todo/users`;
 
 function Edit() {
-    const { id } = useParams(); // ย้ายเข้ามาไว้ในฟังก์ชัน Edit
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState({
-        avatar: '',
         name: '',
-        email: '',
         phone: ''
     });
+    const [IdUser, setId] = useState(useParams().id);
 
     // ฟังก์ชันดึงข้อมูล
     async function loadingUser() {
+        if (!IdUser) return;
         try {
-            setLoading(true);
-            const response = await axios.get(`${USER_URL}/${id}`);
+            const response = await axios.get(`${USER_URL}/${IdUser}`);
             setUser(response.data);
         } catch (error) {
-            console.error("Error:", error);
+            console.error("User not found");
+            setUser({ name: '', phone: '', avatar: '' });
         } finally {
-            setLoading(false);
+            setLoading(false); 
         }
     }
 
@@ -34,7 +33,10 @@ function Edit() {
     async function handleSave() {
         try {
             setLoading(true);
-            await axios.put(`${USER_URL}/${id}`, user);
+            await axios.put(`${USER_URL}/${IdUser}`, {
+                name: user.name,
+                phone: user.phone
+            });
             alert("Updated successfully!");
             navigate('/');
         } catch (error) {
@@ -46,19 +48,39 @@ function Edit() {
 
     useEffect(() => {
         loadingUser();
-    }, [id]);
+    }, [IdUser]);
 
     if (loading) {
-        return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Loading...</div>;
+        return (
+            <div className="min-h-screen bg-gray-900 p-8 flex-col justify-center items-center flex">
+                <div className="bg-gray-700 rounded-2xl shadow-xl p-6 w-full max-w-md mb-8">
+                    <h3 className="text-2xl font-bold text-gray-200 mb-6 text-center">
+                        Loading...
+                    </h3>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 p-8 flex justify-center items-start">
+        <div className="min-h-screen bg-gray-900 p-8 flex-col justify-center items-center flex">
+
+            <div className="bg-gray-700 rounded-2xl shadow-xl p-6 w-full max-w-md mb-8">
+                <h3 className="text-2xl font-bold text-gray-200 mb-6 text-center">
+                    Search User by ID
+                </h3>
+                <input
+                    type="text" 
+                    value={IdUser}
+                    onChange={(e) => setId(e.target.value)} 
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition"
+                />
+            </div>
+
             <div className="bg-gray-700 rounded-2xl shadow-xl p-6 w-full max-w-md">
                 <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                     Edit User Information
                 </h1>
-
                 <div className="flex flex-col gap-6">
                     {/* รูปภาพสี่เหลี่ยม */}
                     <div className="w-full aspect-square bg-gray-200 rounded-lg overflow-hidden border">
@@ -90,27 +112,17 @@ function Edit() {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition"
                             />
                         </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">อีเมล</label>
-                            <input
-                                type="email"
-                                value={user.email}
-                                onChange={(e) => setUser({ ...user, email: e.target.value })} // ทำให้พิมพ์แก้ไขได้
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none transition"
-                            />
-                        </div>
                     </div>
 
                     {/* ปุ่มกด */}
                     <div className="flex gap-2">
-                        <button 
+                        <button
                             onClick={() => navigate('/')}
                             className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-md transition"
                         >
                             Cancel
                         </button>
-                        <button 
+                        <button
                             onClick={handleSave}
                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition"
                         >
